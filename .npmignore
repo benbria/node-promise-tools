@@ -1,0 +1,6 @@
+/coverage
+/src
+/test
+.travis.yml
+.eslintrc
+.babelrc

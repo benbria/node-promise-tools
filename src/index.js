@@ -1,0 +1,118 @@
+"use strict"
+
+/*
+ * Returns a Promise which resolves after `ms` milliseconds have elapsed.  The returned Promise will never reject.
+ */
+exports.delay = (ms) =>
+    new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+
+/*
+ * Returns a `{promise, resolve, reject}` object.  The returned `promise` will resolve or reject when `resolve` or
+ * `reject` are called.
+ */
+exports.defer = () => {
+    let answer = {};
+    answer.promise = new Promise((resolve, reject) => {
+        answer.resolve = resolve;
+        answer.reject = reject;
+    });
+    return answer;
+};
+
+/*
+ * Given an array, `tasks`, of functions which return Promises, executes each function in `tasks` in series, only
+ * calling the next function once the previous function has completed.
+ */
+exports.series = (tasks) => {
+    let results = [];
+    return tasks.reduce(
+        (series, task) =>
+            series.then(task)
+            .then((result) => {
+                results.push(result);
+            }),
+        Promise.resolve()
+    ).then(() => results);
+};
+
+/*
+ * Given an array, `tasks`, of functions which return Promises, executes each function in `tasks` in parallel.
+ * If `limit` is supplied, then at most `limit` tasks will be executed concurrently.
+ */
+exports.parallel = exports.parallelLimit = (tasks, limit) => {
+    if (!limit || limit < 1 || limit >= tasks.length) {
+        return Promise.all(tasks.map((task) => Promise.resolve().then(task)));
+    }
+
+    return new Promise((resolve, reject) => {
+        let results = [];
+
+        let currentTask = 0;
+        let running = 0;
+        let errored = false;
+
+        let startTask = () => {
+            if (errored) {return;}
+            if (currentTask >= tasks.length) {return;}
+
+            let taskNumber = currentTask++;
+            let task = tasks[taskNumber];
+            running++;
+
+            Promise.resolve()
+            .then(task)
+            .then(
+                (result) => {
+                    results[taskNumber] = result;
+                    running--;
+                    if(currentTask < tasks.length && running < limit) {
+                        startTask();
+                    } else if (running === 0) {
+                        resolve(results);
+                    }
+                },
+                (err) => {
+                    if (errored) {return;}
+                    errored = true;
+                    reject(err);
+                }
+            );
+        };
+
+        // Start up `limit` tasks.
+        for(let i = 0; i < limit; i++) {
+            startTask();
+        }
+    });
+};
+
+/*
+ * Add a timeout to an existing Promise.
+ *
+ * Resolves to the same value as `p` if `p` resolves within `ms` milliseconds, otherwise the returned Promise will
+ * reject with the error "Timeout: Promise did not resolve within ${ms} milliseconds"
+ */
+exports.timeout = (p, ms) =>
+    new Promise((resolve, reject) => {
+        let timer = setTimeout(() => {
+            timer = null;
+            reject(new Error(`Timeout: Promise did not resolve within ${ms} milliseconds`));
+        }, ms);
+
+        p.then(
+            (result) => {
+                if(timer !== null) {
+                    clearTimeout(timer);
+                    resolve(result);
+                }
+            },
+            (err) => {
+                if(timer !== null) {
+                    clearTimeout(timer);
+                    reject(err);
+                }
+            }
+        );
+    });
