@@ -1,5 +1,5 @@
 {
-  "name": "node-promise-tools",
+  "name": "promise-tools",
   "version": "0.1.0",
   "description": "Tools for working with Promises",
   "main": "lib/index.js",
