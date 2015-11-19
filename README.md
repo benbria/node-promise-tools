@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/benbria/node-promise-tools.svg?branch=master)](https://travis-ci.org/benbria/node-promise-tools)
+[![Coverage Status](https://coveralls.io/repos/benbria/node-promise-tools/badge.svg?branch=master&service=github)](https://coveralls.io/github/benbria/node-promise-tools?branch=master)
+
 ## What is it?
 
 There are a lot of nice Promise libraries out there like [bluebird](https://github.com/petkaantonov/bluebird) and
