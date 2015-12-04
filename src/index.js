@@ -1,5 +1,35 @@
 "use strict"
 
+let hasProp = {}.hasOwnProperty;
+let extend = function(child, parent) {
+    for (let key in parent) {
+        if (hasProp.call(parent, key)) {child[key] = parent[key];}
+    }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor();
+    child.__super__ = parent.prototype;
+    return child;
+}
+
+let TimeoutError = exports.TimeoutError = function (message) {
+    if (!(this instanceof TimeoutError)) {
+        return new TimeoutError(message);
+    }
+    if(Error.captureStackTrace) {
+        // This is better, because it makes the resulting stack trace have the correct error name.  But, it
+        // only works in V8/Chrome.
+        TimeoutError.__super__.constructor.apply(this, arguments);
+        Error.captureStackTrace(this, this.constructor);
+    } else {
+        // Hackiness for other browsers.
+        this.stack = (new Error(message)).stack;
+    }
+    this.message = message;
+    this.name = "TimeoutError";
+}
+extend(TimeoutError, Error);
+
 /*
  * Returns a Promise which resolves after `ms` milliseconds have elapsed.  The returned Promise will never reject.
  */
@@ -98,7 +128,7 @@ exports.timeout = (p, ms) =>
     new Promise((resolve, reject) => {
         let timer = setTimeout(() => {
             timer = null;
-            reject(new Error(`Timeout: Promise did not resolve within ${ms} milliseconds`));
+            reject(new exports.TimeoutError(`Timeout: Promise did not resolve within ${ms} milliseconds`));
         }, ms);
 
         p.then(

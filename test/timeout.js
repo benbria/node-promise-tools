@@ -18,11 +18,11 @@ describe('timeout', () => {
 
     it('should reject if the underlying promise fails to resolve in time', () => {
         let p = promiseTools.delay(100).then(() => "done");
-        return expect(promiseTools.timeout(p, 1)).to.eventually.be.rejectedWith("Timeout");
+        return expect(promiseTools.timeout(p, 1)).to.eventually.be.rejectedWith(promiseTools.TimeoutError);
     });
 
     it('should reject if the underlying promise fails to reject in time', () => {
         let p = promiseTools.delay(100).then(() => {throw new Error("Boom")});
-        return expect(promiseTools.timeout(p, 1)).to.eventually.be.rejectedWith("Timeout");
+        return expect(promiseTools.timeout(p, 1)).to.eventually.be.rejectedWith(promiseTools.TimeoutError);
     });
 });

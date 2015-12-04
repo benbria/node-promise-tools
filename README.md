@@ -126,7 +126,8 @@ Example:
 Adds a timeout to an existing Promise.
 
 Resolves to the same value as `promise` if `promise` resolves within `ms` milliseconds, otherwise the returned
-Promise will reject with the error "Timeout: Promise did not resolve within ${ms} milliseconds".
+Promise will reject with the error "Timeout: Promise did not resolve within ${ms} milliseconds".  The generated error
+will be an instance of `promiseTools.TimeoutError`.
 
 Note that the underlying `promise` will continue to run, as there is no way to "cancel" a Promise in JavaScript.
 

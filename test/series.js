@@ -13,10 +13,7 @@ describe('series', () => {
             () => Promise.resolve("c")
         ];
 
-        return Promise.all(tasks.map((task) => task()))
-        .then((expectedResults) => {
-            return expect(promiseTools.series(tasks)).to.eventually.eql(expectedResults);
-        });
+        return expect(promiseTools.series(tasks)).to.eventually.eql(['a', 'b', 'c']);
     });
 
     it('should execute multiple functions one by one', () => {
