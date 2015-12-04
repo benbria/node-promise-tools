@@ -41,6 +41,7 @@ Then somewhere in your node.js application:
 * [`parallel`](#parallel), `parallelLimit`
 * [`series`](#series)
 * [`timeout`](#timeout)
+* [`whilst`](#whilst), `doWhilst`
 
 
 # Utilities
@@ -119,7 +120,6 @@ Example:
     });
 
 
-
 <a name="timeout"/>
 ### timeout(promise, ms)
 
@@ -136,3 +136,28 @@ Example:
     // Will reject if `doSomething` takes longer than 500 milliseconds.
     promiseTools.timeout(doSomething(), 500)
     .then(...)
+
+<a name="whilst"/>
+### whilst(fn, test), doWhilst(test, fn)
+
+While the synchronous function `test()` returns true, `whilst` will continuously execute `fn()`.  `fn()` should return
+a Promise.  `whilst` will resolve to the same value as the final call to `fn()`.  If `fn()` or `test()` throw an error,
+then `whilst()` will reject immediately.
+
+`doWhilst()` is similar to `whilst()`, but `whilst()` might execute `fn()` zero times if `test()` returns false on the
+first run, where `doWhilst()` is guaranteed to call `fn()` at least once.  Note that the parameters are reversed
+between `whilst()` and `doWhilst()`.
+
+Example:
+
+    var count = 0;
+    promiseTools.whilst(
+        function() {
+            count++;
+            return Promise.resolve(count);
+        },
+        function() {return count > 10;}
+    )
+    .then(function(result) {
+       // result will be 10 here.
+    });

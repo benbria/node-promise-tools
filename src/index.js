@@ -146,3 +146,47 @@ exports.timeout = (p, ms) =>
             }
         );
     });
+
+/*
+ * Continually call `fn()` while `test()` returns true.
+ *
+ * `fn()` should return a Promise.  `test()` is a synchronous function which returns true of false.
+ *
+ * `whilst` will resolve to the last value that `fn()` resolved to, or will reject immediately with an error if
+ * `fn()` rejects or if `fn()` or `test()` throw.
+ */
+exports.whilst = (test, fn) =>
+    new Promise((resolve, reject) => {
+        let lastResult = null;
+        let doIt = () => {
+            try {
+                if(test()) {
+                    Promise.resolve()
+                    .then(fn)
+                    .then(
+                        (result) => {
+                            lastResult = result;
+                            setTimeout(doIt, 0);
+                        },
+                        reject
+                    );
+                } else {
+                    resolve(lastResult);
+                }
+            } catch (err) {
+                reject(err);
+            }
+        };
+
+        doIt();
+    });
+
+exports.doWhilst = (fn, test) => {
+    let first = true;
+    let doTest = () => {
+        let answer = first || test();
+        first = false;
+        return answer;
+    };
+    return exports.whilst(doTest, fn);
+};
