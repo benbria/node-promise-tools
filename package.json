@@ -7,7 +7,8 @@
     "quicktest": "mocha",
     "test": "mocha --compilers js:babel-core/register",
     "coverage": "babel-node node_modules/isparta/bin/isparta cover node_modules/mocha/bin/_mocha",
-    "prepublish": "babel -d lib src"
+    "prepublish": "babel -d lib src",
+    "clean": "rm -rf lib coverage"
   },
   "keywords": [
     "async",
