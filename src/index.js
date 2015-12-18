@@ -190,3 +190,57 @@ exports.doWhilst = (fn, test) => {
     };
     return exports.whilst(doTest, fn);
 };
+
+exports.FOREVER = -1;
+
+/*
+ * keep calling `fn` until it returns a non-error value, doesn't throw, or returns a Promise that resolves. `fn` will be
+ * attempted `times` many times before rejecting. If `times` is given as `exports.FOREVER`, then `retry` will attempt to
+ * resolve forever (useful if you are just waiting for something to finish).
+ * @param {Object|Number} options hash to provide `times` and `interval`. Defaults (times=5, interval=0). If this value
+ *                        is a number, only `times` will be set.
+ * @param {Function}      fn the task/check to be performed. Can either return a synchronous value, throw an error, or
+ *                        return a promise
+ * @returns {Promise}
+ */
+exports.retry = (options, fn) => {
+    let times = 5;
+    let interval = 0;
+    let attempts = [];
+    let infinite = false;
+
+    if ('number' === typeof(options)) {
+        times = options;
+    }
+    else if ('object' === typeof(options)) {
+        if (options.times) times = parseInt(options.times, 10);
+        if (options.interval) interval = parseInt(options.interval, 10);
+    }
+    else {
+        throw new Error('Unsupported argument type for \'times\': ' + typeof(options));
+    }
+
+    if (times === exports.FOREVER) infinite = true;
+
+    return new Promise((resolve, reject) => {
+        let doIt = () => {
+            Promise.resolve()
+            .then(() => {
+                return fn(attempts[attempts.length - 1]);
+            })
+            .then((results) => {
+                if (results instanceof Error) throw results;
+                else resolve(results);
+            })
+            .catch((err) => {
+                attempts.push(err);
+                if (!infinite && attempts.length === times) {
+                    reject(attempts);
+                } else {
+                    setTimeout(doIt, interval);
+                }
+            });
+        };
+        doIt();
+    });
+};
