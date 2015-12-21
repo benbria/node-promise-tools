@@ -42,6 +42,7 @@ Then somewhere in your node.js application:
 * [`series`](#series)
 * [`timeout`](#timeout)
 * [`whilst`](#whilst), `doWhilst`
+* [`retry`](#retry)
 
 
 # Utilities
@@ -160,4 +161,38 @@ Example:
     )
     .then(function(result) {
        // result will be 10 here.
+    });
+
+<a name="retry"/>
+### retry(options, fn)
+
+Will continuously call `fn` until it returns a synchronous value, doesn't throw, or returns a Promise that resolves. It will be retried `options.times`. You can pass `{times: Infinity}` to retry indefinitely. The `fn` will be passed the `lastAttempt` object which is the Error object of the last attempt.
+
+Options: `times` (Default=5) and `interval` (Default=0). `interval` is the time between retries in milliseconds. If the `options` argument is passed as just a number, only `times` will be set.
+
+Examples:
+
+    var count = 0;
+    promiseTools.retry({times: 4, interval: 5}, function(lastAttempt) {
+        count++;
+        if (count === 2) Promise.resolve(true);
+        else Promise.reject(new Error('boom'));
+    })
+    .then(function(result) {
+       // result will be `true` here.
+    });
+
+    ---------------------------------------------
+
+    var count = 0;
+    promiseTools.retry(1, function(lastAttempt) {
+        count++;
+        if (count === 2) Promise.resolve(true);
+        else Promise.reject(new Error('boom'));
+    })
+    .then(function(result) {
+       // will not resolve.
+    })
+    .catch(function(err) {
+        // err.message should be `boom` here.
     });

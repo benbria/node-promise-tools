@@ -20,15 +20,15 @@ describe('retry', () => {
     });
 
     it('should retry infinitely and resolve', () => {
-        let retry = promiseTools.retry(-1, getTest(3));
+        let retry = promiseTools.retry(Infinity, getTest(3));
         return expect(retry).to.eventually.equal(3);
     });
 
     it('should reject', (done) => {
         let retry = promiseTools.retry(3, getTest(4));
-        retry.catch((attempts) => {
+        retry.catch((lastAttempt) => {
             try {
-                expect(attempts.length).to.eq(3);
+                expect(lastAttempt).to.be.instanceof(Error);
                 done();
             } catch (err) {
                 done(err);
@@ -58,12 +58,4 @@ describe('retry', () => {
         });
         expect(p).to.eventually.be.rejectedWith('Unsupported argument type for \'times\': undefined');
     });
-
-    it('should reject when an Error value is resolved', () => {
-        let retry = promiseTools.retry(1, () => {
-            return new Error('boom');
-        });
-        return expect(retry).to.eventually.be.rejectedWith('boom');
-    });
-
 });

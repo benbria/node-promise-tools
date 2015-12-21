@@ -191,8 +191,6 @@ exports.doWhilst = (fn, test) => {
     return exports.whilst(doTest, fn);
 };
 
-exports.FOREVER = -1;
-
 /*
  * keep calling `fn` until it returns a non-error value, doesn't throw, or returns a Promise that resolves. `fn` will be
  * attempted `times` many times before rejecting. If `times` is given as `exports.FOREVER`, then `retry` will attempt to
@@ -206,8 +204,8 @@ exports.FOREVER = -1;
 exports.retry = (options, fn) => {
     let times = 5;
     let interval = 0;
-    let attempts = [];
-    let infinite = false;
+    let attempts = 0;
+    let lastAttempt = null;
 
     if ('number' === typeof(options)) {
         times = options;
@@ -220,22 +218,18 @@ exports.retry = (options, fn) => {
         throw new Error('Unsupported argument type for \'times\': ' + typeof(options));
     }
 
-    if (times === exports.FOREVER) infinite = true;
-
     return new Promise((resolve, reject) => {
         let doIt = () => {
             Promise.resolve()
             .then(() => {
-                return fn(attempts[attempts.length - 1]);
+                return fn(lastAttempt);
             })
-            .then((results) => {
-                if (results instanceof Error) throw results;
-                else resolve(results);
-            })
+            .then(resolve)
             .catch((err) => {
-                attempts.push(err);
-                if (!infinite && attempts.length === times) {
-                    reject(attempts);
+                attempts++;
+                lastAttempt = err;
+                if (times !== Infinity && attempts === times) {
+                    reject(lastAttempt);
                 } else {
                     setTimeout(doIt, interval);
                 }
