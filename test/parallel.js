@@ -48,12 +48,15 @@ describe('parallel', () => {
     it('should execute tasks concurrently to a limit', () => {
         let running = 0;
         let maxRunning = 0;
+        let complete = 0;
+
         let task = () => {
             running++;
             maxRunning = Math.max(maxRunning, running);
 
             return promiseTools.delay(5)
             .then(() => {
+                complete++;
                 running--;
             });
         }
@@ -64,7 +67,8 @@ describe('parallel', () => {
 
         return promiseTools.parallelLimit(tasks, 3)
         .then(() => {
-            expect(maxRunning).to.equal(3);
+            expect(maxRunning, "max concurrent tasks").to.equal(3);
+            expect(complete, "tasks run").to.equal(10);
         });
     });
 
