@@ -190,3 +190,51 @@ exports.doWhilst = (fn, test) => {
     };
     return exports.whilst(doTest, fn);
 };
+
+/*
+ * keep calling `fn` until it returns a non-error value, doesn't throw, or returns a Promise that resolves. `fn` will be
+ * attempted `times` many times before rejecting. If `times` is given as `exports.FOREVER`, then `retry` will attempt to
+ * resolve forever (useful if you are just waiting for something to finish).
+ * @param {Object|Number} options hash to provide `times` and `interval`. Defaults (times=5, interval=0). If this value
+ *                        is a number, only `times` will be set.
+ * @param {Function}      fn the task/check to be performed. Can either return a synchronous value, throw an error, or
+ *                        return a promise
+ * @returns {Promise}
+ */
+exports.retry = (options, fn) => {
+    let times = 5;
+    let interval = 0;
+    let attempts = 0;
+    let lastAttempt = null;
+
+    if ('number' === typeof(options)) {
+        times = options;
+    }
+    else if ('object' === typeof(options)) {
+        if (options.times) times = parseInt(options.times, 10);
+        if (options.interval) interval = parseInt(options.interval, 10);
+    }
+    else {
+        throw new Error('Unsupported argument type for \'times\': ' + typeof(options));
+    }
+
+    return new Promise((resolve, reject) => {
+        let doIt = () => {
+            Promise.resolve()
+            .then(() => {
+                return fn(lastAttempt);
+            })
+            .then(resolve)
+            .catch((err) => {
+                attempts++;
+                lastAttempt = err;
+                if (times !== Infinity && attempts === times) {
+                    reject(lastAttempt);
+                } else {
+                    setTimeout(doIt, interval);
+                }
+            });
+        };
+        doIt();
+    });
+};
