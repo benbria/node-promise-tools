@@ -125,7 +125,7 @@
     "radix": 2, // require use of the second argument for parseInt() (off by default)
     "vars-on-top": 2, // requires to declare all vars on top of their containing scope (off by default)
     "wrap-iife": 2, // require immediate function invocation to be wrapped in parentheses (off by default)
-    "yoda": 2, // require or disallow Yoda conditions
+    "yoda": 0, // require or disallow Yoda conditions
 
     //
     // Strict Mode

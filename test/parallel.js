@@ -83,7 +83,7 @@ describe('parallel', () => {
             expect(promiseTools.parallelLimit(tasks, 1), "With 1 parallel").to.eventually.rejectedWith("boom"),
             expect(promiseTools.parallelLimit(tasks, 2), "With 2 parallel").to.eventually.rejectedWith("boom"),
             expect(promiseTools.parallelLimit(tasks, 3), "With 3 parallel").to.eventually.rejectedWith("boom"),
-            expect(promiseTools.parallelLimit(tasks, 4), "With 4 parallel").to.eventually.rejectedWith("boom"),
+            expect(promiseTools.parallelLimit(tasks, 4), "With 4 parallel").to.eventually.rejectedWith("boom")
         ])
     });
 });

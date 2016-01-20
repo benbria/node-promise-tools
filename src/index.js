@@ -211,8 +211,8 @@ exports.retry = (options, fn) => {
         times = options;
     }
     else if ('object' === typeof(options)) {
-        if (options.times) times = parseInt(options.times, 10);
-        if (options.interval) interval = parseInt(options.interval, 10);
+        if (options.times) {times = parseInt(options.times, 10);}
+        if (options.interval) {interval = parseInt(options.interval, 10);}
     }
     else {
         throw new Error('Unsupported argument type for \'times\': ' + typeof(options));
