@@ -54,8 +54,8 @@ Then somewhere in your node.js application:
 ### map(arr, iterator, limit)
 
 Calls `iterator(item, index)` for every item in `map`, which should return a Promise.  If `limit` is specified,
-then at most `limit` calls to iterator will be started at a time.  Resolves to an array of items (the resolved
-value of each promise returned by `iterator()`).  If any iterator rejects, this will reject immediately.
+then at most `limit` calls to iterator will be started at a time (defaults to 1).  Resolves to an array of items (the
+resolved value of each promise returned by `iterator()`).  If any iterator rejects, this will reject immediately.
 
 # Utilities
 
