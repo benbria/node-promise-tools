@@ -32,6 +32,10 @@ Then somewhere in your node.js application:
 
 # API
 
+## Collections
+
+* [`map`](#map)
+
 ## Utilities
 
 * [`defer`](#defer)
@@ -44,6 +48,14 @@ Then somewhere in your node.js application:
 * [`whilst`](#whilst), `doWhilst`
 * [`retry`](#retry)
 
+# Collections
+
+<a name="map"/>
+### map(arr, iterator, limit)
+
+Calls `iterator(item, index)` for every item in `map`, which should return a Promise.  If `limit` is specified,
+then at most `limit` calls to iterator will be started at a time.  Resolves to an array of items (the resolved
+value of each promise returned by `iterator()`).  If any iterator rejects, this will reject immediately.
 
 # Utilities
 

@@ -119,6 +119,21 @@ exports.parallel = exports.parallelLimit = (tasks, limit) => {
 };
 
 /*
+ * Given an array `arr` of items, calls `iter(item, index)` for every item in `arr`.  `iter()` should return a
+ * Promise.  Up to `limit` items will be called in parallel (defaults to 1.)
+ */
+exports.map = (arr, iter, limit) => {
+    let taskLimit = limit;
+    if (!limit || limit < 1) {taskLimit = 1;}
+    if (limit >= arr.length) {taskLimit = arr.length;}
+
+    let tasks = arr.map((item, index) => (() => iter(item, index)));
+    return exports.parallel(tasks, taskLimit);
+};
+
+
+
+/*
  * Add a timeout to an existing Promise.
  *
  * Resolves to the same value as `p` if `p` resolves within `ms` milliseconds, otherwise the returned Promise will
