@@ -166,8 +166,9 @@ Example:
 
     var count = 0;
     promiseTools.whilst(
-        () => count > 10,
+        () => count < 10, /* While count is less than 10... */
         function() {
+            /* Do this... */
             count++;
             return Promise.resolve(count);
         }
