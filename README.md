@@ -160,7 +160,7 @@ then `whilst()` will reject immediately.
 `doWhilst()` is similar to `whilst()`, but `whilst()` might execute `fn()` zero times if `test()` returns false on the
 first run, where `doWhilst()` is guaranteed to call `fn()` at least once.  Note that the parameters are reversed
 between `whilst()` and `doWhilst()` to reflect the fact that one is "while /test/ do /fn/", and the other is "do /fn/
-while /test/" (and to preserver API compatibility with [async](https://github.com/caolan/async#whilst)).
+while /test/" (and to preserve API compatibility with [async](https://github.com/caolan/async#whilst)).
 
 Example:
 
