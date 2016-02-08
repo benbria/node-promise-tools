@@ -151,7 +151,7 @@ Example:
     .then(...)
 
 <a name="whilst"/>
-### whilst(fn, test), doWhilst(test, fn)
+### whilst(test, fn), doWhilst(fn, test)
 
 While the synchronous function `test()` returns true, `whilst` will continuously execute `fn()`.  `fn()` should return
 a Promise.  `whilst` will resolve to the same value as the final call to `fn()`.  If `fn()` or `test()` throw an error,
@@ -159,19 +159,20 @@ then `whilst()` will reject immediately.
 
 `doWhilst()` is similar to `whilst()`, but `whilst()` might execute `fn()` zero times if `test()` returns false on the
 first run, where `doWhilst()` is guaranteed to call `fn()` at least once.  Note that the parameters are reversed
-between `whilst()` and `doWhilst()`.
+between `whilst()` and `doWhilst()` to reflect the fact that one is "while /test/ do /fn/", and the other is "do /fn/
+while /test/" (and to preserver API compatibility with [async](https://github.com/caolan/async#whilst)).
 
 Example:
 
     var count = 0;
     promiseTools.whilst(
+        () => count > 10,
         function() {
             count++;
             return Promise.resolve(count);
-        },
-        function() {return count > 10;}
+        }
     )
-    .then(function(result) {
+    .then(result => {
        // result will be 10 here.
     });
 
