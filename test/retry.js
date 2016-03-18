@@ -41,7 +41,8 @@ describe('retry', () => {
         {options: {times: 5}, msg: 'just times'},
         {options: {times: 5.4}, msg: 'just times'},
         {options: {times: Infinity}, msg: 'times = Infinity'},
-        {options: {}, msg: 'neither times nor interval'}
+        {options: {}, msg: 'neither times nor interval'},
+        {options: {interval: Infinity}, msg: 'Should accept Infinity interval'}
     ].forEach((args) => {
         it(`should accept first argument as an options hash with ${args.msg}`, () => {
             let retry = promiseTools.retry(args.options, getTest(5));

@@ -232,7 +232,7 @@ exports.retry = (options, fn) => {
         if ('number' === typeof(options.times)) times = +options.times;
         else if (options.times) return Promise.reject(makeTimeOptionError(options.times));
 
-        if (options.interval) interval = parseInt(options.interval, 10);
+        if (options.interval) interval = +options.interval;
     }
     else if (options) return Promise.reject(makeTimeOptionError(options));
     else return Promise.reject(new Error('No parameters given'));
