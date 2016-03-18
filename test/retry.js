@@ -39,6 +39,8 @@ describe('retry', () => {
     [
         {options: {times: 5, interval: 10}, msg: 'times and interval'},
         {options: {times: 5}, msg: 'just times'},
+        {options: {times: 5.4}, msg: 'just times'},
+        {options: {times: Infinity}, msg: 'times = Infinity'},
         {options: {}, msg: 'neither times nor interval'}
     ].forEach((args) => {
         it(`should accept first argument as an options hash with ${args.msg}`, () => {
@@ -47,15 +49,21 @@ describe('retry', () => {
         });
     });
 
+    it('should call the default 5 times with no options provided', () => {
+        let retry = promiseTools.retry(getTest(5));
+        return expect(retry).to.eventually.equal(5);
+    })
+
+    it('should throw when given a bogus `times` option', () => {
+        let retry = promiseTools.retry('5', getTest(5));
+        return expect(retry).to.be.eventually.rejected;
+    })
+
     it('should return an error with invalid options argument', () => {
-        let p = Promise.resolve().then(() => {
-            // had to do this for some reason. Otherwise `chai-as-promised` always passed erroneously.
-            try {
-                return promiseTools.retry(undefined, getTest(1));
-            } catch (err) {
-                throw err;
-            }
-        });
-        expect(p).to.eventually.be.rejectedWith('Unsupported argument type for \'times\': undefined');
+        expect(promiseTools.retry(undefined, getTest(1))).to.eventually.be.rejectedWith('Unsupported argument type for \'times\': undefined');
     });
+
+    it('should reject when called with nothing', () => {
+        expect(promiseTools.retry()).to.eventually.be.rejectedWith('No parameters given');
+    })
 });
