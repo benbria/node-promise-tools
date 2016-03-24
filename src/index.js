@@ -208,7 +208,7 @@ exports.doWhilst = (fn, test) => {
 
 /*
  * keep calling `fn` until it returns a non-error value, doesn't throw, or returns a Promise that resolves. `fn` will be
- * attempted `times` many times before rejecting. If `times` is given as `exports.FOREVER`, then `retry` will attempt to
+ * attempted `times` many times before rejecting. If `times` is given as `Infinity`, then `retry` will attempt to
  * resolve forever (useful if you are just waiting for something to finish).
  * @param {Object|Number} options hash to provide `times` and `interval`. Defaults (times=5, interval=0). If this value
  *                        is a number, only `times` will be set.
@@ -222,16 +222,20 @@ exports.retry = (options, fn) => {
     let attempts = 0;
     let lastAttempt = null;
 
-    if ('number' === typeof(options)) {
-        times = options;
+    function makeTimeOptionError(value) {
+        return new Error(`Unsupported argument type for \'times\': ${typeof(value)}`);
     }
+
+    if ('function' === typeof(options)) fn = options;
+    else if ('number' === typeof(options)) times = +options;
     else if ('object' === typeof(options)) {
-        if (options.times) {times = parseInt(options.times, 10);}
-        if (options.interval) {interval = parseInt(options.interval, 10);}
+        if ('number' === typeof(options.times)) times = +options.times;
+        else if (options.times) return Promise.reject(makeTimeOptionError(options.times));
+
+        if (options.interval) interval = +options.interval;
     }
-    else {
-        throw new Error('Unsupported argument type for \'times\': ' + typeof(options));
-    }
+    else if (options) return Promise.reject(makeTimeOptionError(options));
+    else return Promise.reject(new Error('No parameters given'));
 
     return new Promise((resolve, reject) => {
         let doIt = () => {
