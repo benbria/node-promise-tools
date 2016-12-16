@@ -3,6 +3,7 @@
   "version": "1.0.2",
   "description": "Tools for working with Promises",
   "main": "lib/index.js",
+  "types": "./index.d.ts",
   "scripts": {
     "quicktest": "mocha",
     "test": "mocha --compilers js:babel-core/register",
@@ -23,6 +24,7 @@
   "author": "Jason Walton <dev@lucid.thedreaming.org> (https://github.com/jwalton)",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "6.0.52",
     "babel-cli": "^6.1.18",
     "babel-core": "^6.1.21",
     "babel-preset-es2015": "^6.1.18",
@@ -31,6 +33,7 @@
     "coveralls": "^2.11.4",
     "es6-promise": "^3.0.2",
     "isparta": "^4.0.0",
-    "mocha": "^2.3.4"
+    "mocha": "^2.3.4",
+    "typescript": "2.1.4"
   }
 }
