@@ -51,6 +51,7 @@ Then somewhere in your node.js application:
 # Collections
 
 <a name="map"/>
+
 ### map(arr, iterator, limit)
 
 Calls `iterator(item, index)` for every item in `map`, which should return a Promise.  If `limit` is specified,
@@ -60,6 +61,7 @@ resolved value of each promise returned by `iterator()`).  If any iterator rejec
 # Utilities
 
 <a name="defer"/>
+
 ### defer()
 
 Returns a `{promise, resolve, reject}` object.  The returned `promise` will resolve or reject when `resolve` or
@@ -73,6 +75,7 @@ Example:
 
 
 <a name="delay"/>
+
 ### delay(ms)
 
 Returns a Promise which resolves after `ms` milliseconds have elapsed.  The returned Promise will never reject.
@@ -89,6 +92,7 @@ Example:
 # Control Flow
 
 <a name="parallel"/>
+
 ### parallel(tasks, limit)
 
 Alias: `parallelLimit`
@@ -115,6 +119,7 @@ Example:
 
 
 <a name="series"/>
+
 ### series(tasks)
 
 Given an array of `tasks`, where each task is a function which takes no arguments and returns a Promise, executes each
@@ -134,6 +139,7 @@ Example:
 
 
 <a name="timeout"/>
+
 ### timeout(promise, ms)
 
 Adds a timeout to an existing Promise.
@@ -151,6 +157,7 @@ Example:
     .then(...)
 
 <a name="whilst"/>
+
 ### whilst(test, fn), doWhilst(fn, test)
 
 While the synchronous function `test()` returns true, `whilst` will continuously execute `fn()`.  `fn()` should return
@@ -178,6 +185,7 @@ Example:
     });
 
 <a name="retry"/>
+
 ### retry(options, fn)
 
 Will continuously call `fn` until it returns a synchronous value, doesn't throw, or returns a Promise that resolves. It will be retried `options.times`. You can pass `{times: Infinity}` to retry indefinitely. The `fn` will be passed the `lastAttempt` object which is the Error object of the last attempt.
