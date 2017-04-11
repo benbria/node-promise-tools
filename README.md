@@ -70,7 +70,7 @@ Returns a `{promise, resolve, reject}` object.  The returned `promise` will reso
 Example:
 
     var deferred = promiseTools.defer();
-    deferred.then(function(result) {console.log(result);});
+    deferred.promise.then(function(result) {console.log(result);});
     deferred.resolve("Hello world!");
 
 
