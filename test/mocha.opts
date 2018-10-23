@@ -1,5 +1,4 @@
---require es6-promise
+--require @babel/register
 --reporter spec
 --recursive
 --check-leaks
---growl

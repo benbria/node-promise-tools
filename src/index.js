@@ -12,7 +12,7 @@ let extend = function(child, parent) {
     return child;
 }
 
-let TimeoutError = exports.TimeoutError = function (message) {
+export function TimeoutError(message) {
     if (!(this instanceof TimeoutError)) {
         return new TimeoutError(message);
     }
@@ -33,29 +33,30 @@ extend(TimeoutError, Error);
 /*
  * Returns a Promise which resolves after `ms` milliseconds have elapsed.  The returned Promise will never reject.
  */
-exports.delay = (ms) =>
-    new Promise((resolve) => {
+export function delay(ms) {
+    return new Promise((resolve) => {
         setTimeout(resolve, ms);
     });
+}
 
 /*
  * Returns a `{promise, resolve, reject}` object.  The returned `promise` will resolve or reject when `resolve` or
  * `reject` are called.
  */
-exports.defer = () => {
+export function defer() {
     let answer = {};
     answer.promise = new Promise((resolve, reject) => {
         answer.resolve = resolve;
         answer.reject = reject;
     });
     return answer;
-};
+}
 
 /*
  * Given an array, `tasks`, of functions which return Promises, executes each function in `tasks` in series, only
  * calling the next function once the previous function has completed.
  */
-exports.series = (tasks) => {
+export function series(tasks) {
     let results = [];
     return tasks.reduce(
         (series, task) =>
@@ -71,7 +72,7 @@ exports.series = (tasks) => {
  * Given an array, `tasks`, of functions which return Promises, executes each function in `tasks` in parallel.
  * If `limit` is supplied, then at most `limit` tasks will be executed concurrently.
  */
-exports.parallel = exports.parallelLimit = (tasks, limit) => {
+export function parallel(tasks, limit) {
     if (!limit || limit < 1 || limit >= tasks.length) {
         return Promise.all(tasks.map((task) => Promise.resolve().then(task)));
     }
@@ -116,22 +117,22 @@ exports.parallel = exports.parallelLimit = (tasks, limit) => {
             startTask();
         }
     });
-};
+}
+
+export { parallel as parallelLimit };
 
 /*
  * Given an array `arr` of items, calls `iter(item, index)` for every item in `arr`.  `iter()` should return a
  * Promise.  Up to `limit` items will be called in parallel (defaults to 1.)
  */
-exports.map = (arr, iter, limit) => {
+export function map(arr, iter, limit) {
     let taskLimit = limit;
     if (!limit || limit < 1) {taskLimit = 1;}
     if (limit >= arr.length) {taskLimit = arr.length;}
 
     let tasks = arr.map((item, index) => (() => iter(item, index)));
-    return exports.parallel(tasks, taskLimit);
-};
-
-
+    return parallel(tasks, taskLimit);
+}
 
 /*
  * Add a timeout to an existing Promise.
@@ -139,11 +140,11 @@ exports.map = (arr, iter, limit) => {
  * Resolves to the same value as `p` if `p` resolves within `ms` milliseconds, otherwise the returned Promise will
  * reject with the error "Timeout: Promise did not resolve within ${ms} milliseconds"
  */
-exports.timeout = (p, ms) =>
-    new Promise((resolve, reject) => {
+export function timeout(p, ms) {
+    return new Promise((resolve, reject) => {
         let timer = setTimeout(() => {
             timer = null;
-            reject(new exports.TimeoutError(`Timeout: Promise did not resolve within ${ms} milliseconds`));
+            reject(new TimeoutError(`Timeout: Promise did not resolve within ${ms} milliseconds`));
         }, ms);
 
         p.then(
@@ -161,6 +162,7 @@ exports.timeout = (p, ms) =>
             }
         );
     });
+}
 
 /*
  * Continually call `fn()` while `test()` returns true.
@@ -170,8 +172,8 @@ exports.timeout = (p, ms) =>
  * `whilst` will resolve to the last value that `fn()` resolved to, or will reject immediately with an error if
  * `fn()` rejects or if `fn()` or `test()` throw.
  */
-exports.whilst = (test, fn) =>
-    new Promise((resolve, reject) => {
+export function whilst(test, fn) {
+    return new Promise((resolve, reject) => {
         let lastResult = null;
         let doIt = () => {
             try {
@@ -195,15 +197,16 @@ exports.whilst = (test, fn) =>
 
         doIt();
     });
+}
 
-exports.doWhilst = (fn, test) => {
+export function doWhilst(fn, test) {
     let first = true;
     let doTest = () => {
         let answer = first || test();
         first = false;
         return answer;
     };
-    return exports.whilst(doTest, fn);
+    return whilst(doTest, fn);
 };
 
 /*
@@ -216,7 +219,7 @@ exports.doWhilst = (fn, test) => {
  *                        return a promise
  * @returns {Promise}
  */
-exports.retry = (options, fn) => {
+export function retry(options, fn) {
     let times = 5;
     let interval = 0;
     let attempts = 0;
@@ -226,16 +229,26 @@ exports.retry = (options, fn) => {
         return new Error(`Unsupported argument type for \'times\': ${typeof(value)}`);
     }
 
-    if ('function' === typeof(options)) fn = options;
-    else if ('number' === typeof(options)) times = +options;
-    else if ('object' === typeof(options)) {
-        if ('number' === typeof(options.times)) times = +options.times;
-        else if (options.times) return Promise.reject(makeTimeOptionError(options.times));
+    if ('function' === typeof(options)) {
+        fn = options;
+        options = {};
+    } else if ('number' === typeof(options)) {
+        times = +options;
+    } else if ('object' === typeof(options)) {
+        if ('number' === typeof(options.times)) {
+            times = +options.times;
+        } else if (options.times) {
+            return Promise.reject(makeTimeOptionError(options.times));
+        }
 
-        if (options.interval) interval = +options.interval;
+        if (options.interval) {
+            interval = +options.interval;
+        }
+    } else if (options) {
+        return Promise.reject(makeTimeOptionError(options));
+    } else {
+        return Promise.reject(new Error('No parameters given'));
     }
-    else if (options) return Promise.reject(makeTimeOptionError(options));
-    else return Promise.reject(new Error('No parameters given'));
 
     return new Promise((resolve, reject) => {
         let doIt = () => {

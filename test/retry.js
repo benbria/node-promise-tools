@@ -61,7 +61,7 @@ describe('retry', () => {
     })
 
     it('should return an error with invalid options argument', () => {
-        expect(promiseTools.retry(undefined, getTest(1))).to.eventually.be.rejectedWith('Unsupported argument type for \'times\': undefined');
+        return expect(promiseTools.retry({times: "foo"}, getTest(1))).to.eventually.be.rejectedWith('Unsupported argument type for \'times\': string');
     });
 
     it('should reject when called with nothing', () => {
