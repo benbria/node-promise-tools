@@ -3,7 +3,7 @@
 // Definitions by: Calvin Wiebe calvin.wiebe@gmail.com
 
 declare class TimeoutError extends Error {}
-type PromiseGeneratingFunction<t> = () => Promise<t>;
+type PromiseGeneratingFunction<t> = () => PromiseLike<t>;
 
 /**
  * Returns a Promise which resolves after `ms` milliseconds have elapsed.  The returned Promise will never reject.
