@@ -42,13 +42,19 @@ describe('retry', () => {
         {options: {times: 5.4}, msg: 'just times'},
         {options: {times: Infinity}, msg: 'times = Infinity'},
         {options: {}, msg: 'neither times nor interval'},
-        {options: {interval: Infinity}, msg: 'Should accept Infinity interval'}
     ].forEach((args) => {
         it(`should accept first argument as an options hash with ${args.msg}`, () => {
             let retry = promiseTools.retry(args.options, getTest(5));
             return expect(retry).to.eventually.equal(5);
         });
     });
+
+    it('should error if interval is infinity', () => {
+        return expect(
+            promiseTools.retry({times: 5, interval: Infinity}, getTest(1))
+        ).to.eventually.be.rejectedWith(`'interval' may not be Infinity`);
+    })
+
 
     it('should call the default 5 times with no options provided', () => {
         let retry = promiseTools.retry(getTest(5));
@@ -61,7 +67,9 @@ describe('retry', () => {
     })
 
     it('should return an error with invalid options argument', () => {
-        return expect(promiseTools.retry({times: "foo"}, getTest(1))).to.eventually.be.rejectedWith('Unsupported argument type for \'times\': string');
+        return expect(
+            promiseTools.retry({times: "foo"}, getTest(1))
+        ).to.eventually.be.rejectedWith('Unsupported argument type for \'times\': string');
     });
 
     it('should reject when called with nothing', () => {

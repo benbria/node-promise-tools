@@ -242,6 +242,9 @@ export function retry(options, fn) {
         }
 
         if (options.interval) {
+            if(options.interval === Infinity) {
+                return Promise.reject(new Error(`'interval' may not be Infinity`));
+            }
             interval = +options.interval;
         }
     } else if (options) {
