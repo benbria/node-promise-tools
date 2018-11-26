@@ -33,13 +33,13 @@ export function series<t>(tasks: PromiseGeneratingFunction<t>[]): Promise<t[]>;
  */
 export function parallel<t>(tasks: PromiseGeneratingFunction<t>[], limit?: number): Promise<t[]>;
 
+type MapIterator<t, u> = (item: t, index: number) => Promise<u>;
 
-type MapIterator<t> = (item: t, index: number) => Promise<t>;
 /**
  * Given an array `arr` of items, calls `iter(item, index)` for every item in `arr`.  `iter()` should return a
  * Promise.  Up to `limit` items will be called in parallel (defaults to 1.)
  */
-export function map<t>(arr: t[], iter: MapIterator<t>, limit?: number): Promise<t[]>;
+export function map<t, u>(arr: t[], iter: MapIterator<t, u>, limit?: number): Promise<u[]>;
 
 /**
  * Add a timeout to an existing Promise.
