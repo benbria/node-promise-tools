@@ -24,6 +24,10 @@
     "utility",
     "module"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benbria/node-promise-tools.git"
+  },
   "author": "Jason Walton <dev@lucid.thedreaming.org> (https://github.com/jwalton)",
   "license": "MIT",
   "devDependencies": {
