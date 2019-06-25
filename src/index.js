@@ -273,3 +273,17 @@ export function retry(options, fn) {
         doIt();
     });
 };
+
+export default {
+    TimeoutError,
+    delay,
+    defer,
+    series,
+    parallel,
+    parallelLimit: parallel,
+    map,
+    timeout,
+    whilst,
+    doWhilst,
+    retry,
+};
